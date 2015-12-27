@@ -26,6 +26,6 @@ class UsersModel(Database):
     Inserts new user
     :return: Json result.
     """
-    data = {"username": "Rocklviv", "email": "dchekirda@gmail.com"}
+    data = {"username": "", "email": ""}
     result = self.collection.insert_one(data)
     return dumps(result.inserted_id)
