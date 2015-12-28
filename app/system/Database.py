@@ -9,7 +9,7 @@ class Database():
   # MongoDB Client
   client = None
   # MongoDB URL
-  url = '192.168.99.100'
+  url = '127.0.0.1'
 
   def __init__(self):
     """

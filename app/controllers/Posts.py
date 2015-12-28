@@ -1,6 +1,6 @@
 from flask_restful import Resource
 from app.models.PostsModel import PostsModel
-from flask import request, jsonify
+from flask import request, jsonify, current_app
 import json
 
 class Posts(Resource):
@@ -12,7 +12,8 @@ class Posts(Resource):
 
   def get(self):
     result = self.model.getPosts()
-    return json.loads(result)
+    current_app.logger.info('List of posts.')
+    return jsonify({ "status": 0, "message": "List of posts", "result": result })
 
   def post(self):
     if not request.json:
@@ -50,7 +51,4 @@ class Posts(Resource):
     pass
 
   def delete(self):
-    pass
-
-  def _checkEmail(self, email):
     pass
