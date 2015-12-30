@@ -1,6 +1,8 @@
+from flask import current_app
+from config.config import DevConfig
 from pymongo import MongoClient
 
-class Database():
+class Database(DevConfig):
   """
   Main Database class
   """
@@ -9,7 +11,7 @@ class Database():
   # MongoDB Client
   client = None
   # MongoDB URL
-  url = '127.0.0.1'
+  url = DevConfig.MONGODBURL
 
   def __init__(self):
     """

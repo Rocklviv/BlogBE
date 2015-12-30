@@ -1,6 +1,11 @@
+import json, re
+from flask import request, jsonify
 from flask_restful import Resource
 from app.models.UsersModel import UsersModel
-import json
+
+#
+# TODO: Create a method that would generate CSRF.
+#
 
 class Users(Resource):
     model = None
@@ -13,11 +18,20 @@ class Users(Resource):
         return {"status": 0, "message": "List of Users", "result": json.loads(result)}
 
     def post(self):
-        result = self.model.insert()
-        return {"status": 0, "message": "Posted List", "result": json.loads(result)}
+        try:
+          username = re.sub(r'^"|"$', '', json.dumps(request.json.get('username')))
+          password = re.sub(r'^"|"$', '', json.dumps(request.json.get('password')))
+          if self.model._checkUser(username, password):
+            pass
+        except Exception as e:
+          return jsonify({"status": 1, "message": e.message, "result": []})
 
     def put(self):
-        return {"status": 0, "message": "Updated user"}
+      result = self.model.insert()
+      return {"status": 0, "message": "Updated user", "result": result}
 
     def delete(self):
-        return {"status": 0, "message": "User removed successfully"}
+      id = re.sub(r'^"|"$', '', request.json.get('id'))
+      print id
+      self.model.deleteUser(id)
+      return {"status": 0, "message": "User removed successfully", "result": []}
