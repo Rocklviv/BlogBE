@@ -1,6 +1,8 @@
-import json
+__version__ = "$Revision$"
+
 from app.system.Database import Database
 from bson.json_util import dumps
+from bson.objectid import ObjectId
 
 class UsersModel(Database):
   # Collection
@@ -32,8 +34,13 @@ class UsersModel(Database):
     return dumps(result.inserted_id)
 
   def deleteUser(self, id):
-    result = self.collection.delete_many({'_id': str(id)})
-    print dumps(result.deleted_count)
+    """
+    Delete user from DB by unique ID.
+    :param id: String. User unique ID.
+    :return: String.
+    """
+    result = self.collection.delete_many({'_id': ObjectId(id)})
+    return dumps(result.deleted_count)
 
   def _checkUser(self, username, password):
     """
@@ -44,4 +51,13 @@ class UsersModel(Database):
     :return: json
     """
     result = self.collection.find({"username": username, "password": password})
-    print(dumps(result))
+    dumps(result)
+
+  def searchUser(self, id):
+    """
+    Search user in DB by unique ID.
+    :param id: String. User unique id.
+    :return: String. Username.
+    """
+    result = self.collection.find_one({"_id": ObjectId(id)})
+    return result['username']
