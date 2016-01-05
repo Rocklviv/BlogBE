@@ -11,11 +11,29 @@ class Posts(Resource):
     self.model = PostsModel()
 
   def get(self):
-    result = self.model.getPosts()
-    current_app.logger.info('List of posts.')
-    return jsonify({ "status": 0, "message": "List of posts", "result": result })
+    """
+    Returns list of posts of post by id.
+    :param id: String. Unique ID of post.
+    :return:
+    """
+    id = None
+    if not request.args:
+      id = None
+
+    if not id:
+      result = self.model.getPosts()
+      current_app.logger.info('List of posts.')
+      return jsonify({"status": 0, "message": "List of posts", "result": result })
+    else:
+      result = self.model.getPost(id)
+      current_app.logger.info('Getting post %s' % id)
+      return jsonify({"status": 0, "message": "Post", "result": result})
 
   def post(self):
+    """
+    Creates Post inserting required data into MongoDB.
+    :return: json
+    """
     if not request.json:
       return jsonify({"status": 1, "message": "Request should contain a data", "result": []})
     else:
@@ -41,7 +59,6 @@ class Posts(Resource):
       elif not type(tags) == str:
         msg = ("Field tags should be a string")
         return jsonify({"status": 2, "message": msg, "result": []})
-
 
       data = {"title": title, "shortUrl": shortUrl, "shortText":shortText, "longText":longText, "tags":tags, "date":date}
       result = self.model.insertPost(data)
