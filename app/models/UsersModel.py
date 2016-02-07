@@ -1,12 +1,14 @@
 __version__ = "$Revision$"
 
 from app.system.Database import Database
-from bson.json_util import dumps
+from app.system.utils.authHelper import AuthHelper
+from bson.json_util import dumps, loads
 from bson.objectid import ObjectId
 
 class UsersModel(Database):
   # Collection
   collection = None
+  authHelper = None
 
   def __init__(self):
     """
@@ -15,6 +17,7 @@ class UsersModel(Database):
     """
     Database.__init__(self)
     self.collection = self.db['users']
+    self.authHelper = AuthHelper()
 
   def list(self):
     """
@@ -50,8 +53,14 @@ class UsersModel(Database):
     :param password: string Password.
     :return: json
     """
-    result = self.collection.find({"username": username, "password": password})
-    dumps(result)
+    result = self.collection.find({"username": username})
+    for document in result:
+      if document['password'] == password and document['username'] == username:
+        token = self.authHelper.setToken(document['username'])
+        if token:
+          return token
+        else:
+          return False
 
   def searchUser(self, id):
     """

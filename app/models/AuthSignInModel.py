@@ -11,9 +11,15 @@ class AuthSignInModel(Database):
     self.collection = self.db['auth']
 
   def checkToken(self, token):
-    result = self.collection.find_one({"token": ObjectId(token)})
-
-    pass
+    result = self.collection.find_one({"token": token})
+    if result:
+      return True
+    else:
+      return False
 
   def _checkTime(self, time):
     pass
+
+  def setToken(self, username, token):
+    result = self.collection.insert_one({"username": username, "token": token})
+    return result.inserted_id

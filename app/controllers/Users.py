@@ -20,13 +20,21 @@ class Users(Resource):
         return {"status": 0, "message": "List of Users", "result": json.loads(result)}
 
     def post(self):
-        try:
-          username = re.sub(r'^"|"$', '', json.dumps(request.json.get('username')))
-          password = re.sub(r'^"|"$', '', json.dumps(request.json.get('password')))
-          if self.model._checkUser(username, password):
-            pass
-        except Exception as e:
-          return jsonify({"status": 1, "message": e.message, "result": []})
+      if (request.is_xhr):
+        username = request.json.get('username')
+        password = request.json.get('password')
+        result = self.model._checkUser(username, password)
+        if result:
+          print result
+          response = jsonify({"status": 0, "message": "Logged in as: %s" % username, "result": [ {"token": result} ]})
+          response.status_code = 200
+          return  response
+        else:
+          response = jsonify({"status": 1, "message": "Username or password is incorect.", "result": []})
+          response.status_code = 403
+          return response
+      else:
+        print "Not XHR"
 
     def put(self):
       result = self.model.insert()

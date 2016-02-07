@@ -1,4 +1,5 @@
-from app.models.AuthSignInModel import AuthModel
+from app.models.AuthSignInModel import AuthSignInModel
+import uuid
 
 class AuthHelper():
 
@@ -9,7 +10,7 @@ class AuthHelper():
     Sets AuthModel instance.
     :return:
     """
-    self.model = AuthModel()
+    self.model = AuthSignInModel()
 
   def checkToken(self, id):
     """
@@ -18,6 +19,25 @@ class AuthHelper():
     :return:
     """
     try:
-      self.model.checkToken(id)
+      if (self.model.checkToken(id) != None):
+        return True
+      else:
+        return False
     except Exception as e:
       return e.message
+
+  def _generateToken(self):
+    """
+    Generates token.
+    :return: uuid token.
+    """
+    return uuid.uuid4().hex
+
+  def setToken(self, username):
+    if username:
+      token = self._generateToken()
+      result = self.model.setToken(username, token)
+      if result:
+        return token
+      else:
+        return False
